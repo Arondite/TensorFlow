@@ -1,0 +1,99 @@
+My first experience with TensorFlow
+
+
+(X:\Anaconda) C:\Users\The Stallion>activate tensorflow
+
+(tensorflow) C:\Users\The Stallion>pip install --ignore-installed --upgrade https://storage.googleapis.com/tensorflow/windows/cpu/tensorflow-1.0.1-cp35-cp35m-win_amd64.whl
+Collecting tensorflow==1.0.1 from https://storage.googleapis.com/tensorflow/windows/cpu/tensorflow-1.0.1-cp35-cp35m-win_amd64.whl
+  Downloading https://storage.googleapis.com/tensorflow/windows/cpu/tensorflow-1.0.1-cp35-cp35m-win_amd64.whl (14.7MB)
+    100% |################################| 14.7MB 93kB/s
+Collecting protobuf>=3.1.0 (from tensorflow==1.0.1)
+  Downloading protobuf-3.2.0-py2.py3-none-any.whl (360kB)
+    100% |################################| 368kB 941kB/s
+Collecting numpy>=1.11.0 (from tensorflow==1.0.1)
+  Downloading numpy-1.12.1-cp35-none-win_amd64.whl (7.7MB)
+    100% |################################| 7.7MB 169kB/s
+Collecting six>=1.10.0 (from tensorflow==1.0.1)
+  Downloading six-1.10.0-py2.py3-none-any.whl
+Collecting wheel>=0.26 (from tensorflow==1.0.1)
+  Downloading wheel-0.29.0-py2.py3-none-any.whl (66kB)
+    100% |################################| 71kB 1.8MB/s
+Collecting setuptools (from protobuf>=3.1.0->tensorflow==1.0.1)
+  Downloading setuptools-35.0.1-py2.py3-none-any.whl (390kB)
+    100% |################################| 399kB 364kB/s
+Collecting appdirs>=1.4.0 (from setuptools->protobuf>=3.1.0->tensorflow==1.0.1)
+  Downloading appdirs-1.4.3-py2.py3-none-any.whl
+Collecting packaging>=16.8 (from setuptools->protobuf>=3.1.0->tensorflow==1.0.1)
+  Downloading packaging-16.8-py2.py3-none-any.whl
+Collecting pyparsing (from packaging>=16.8->setuptools->protobuf>=3.1.0->tensorflow==1.0.1)
+  Downloading pyparsing-2.2.0-py2.py3-none-any.whl (56kB)
+    100% |################################| 61kB 1.0MB/s
+Installing collected packages: appdirs, six, pyparsing, packaging, setuptools, protobuf, numpy, wheel, tensorflow
+Successfully installed appdirs-1.4.3 numpy-1.12.1 packaging-16.8 protobuf-3.2.0 pyparsing-2.2.0 setuptools-20.10.1 six-1.10.0 tensorflow-1.0.1 wheel-0.29.0
+You are using pip version 8.1.1, however version 9.0.1 is available.
+You should consider upgrading via the 'python -m pip install --upgrade pip' command.
+
+(tensorflow) C:\Users\The Stallion>python
+Python 3.5.2 (v3.5.2:4def2a2901a5, Jun 25 2016, 22:18:55) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+>>> import tensorflow as tf
+>>> hello = tf.constant('Hello, TensorFlow!')
+>>> sess = tf.Session()
+>>> print(sess.run(hello))
+b'Hello, TensorFlow!'
+
+>>> node1 = tf.constant(3.0)
+>>> node2 = tf.constant(4.0)
+>>> print(node1, node2)
+Tensor("Const_1:0", shape=(), dtype=float32) Tensor("Const_2:0", shape=(), dtype=float32)
+
+>>> sess = tf.Session()
+>>> print(sess.run([node1, node2]))
+[3.0, 4.0]
+
+>>> node3 = tf.add(node1, node2)
+>>> print("node3: ", node3)
+node3:  Tensor("Add:0", shape=(), dtype=float32)
+>>> print("sess.run(node3): ", sess.run(node3))
+sess.run(node3):  7.0
+
+>>> a = tf.placeholder(tf.float32)
+>>> b = tf.placeholder(tf.float32)
+>>> adder_node = a + b
+>>> print(sess.run(adder_node, {a: 3, b:4.5}))
+7.5
+>>> print(sess.run(adder_node, {a: [1,3], b: [2,4]}))
+[ 3.  7.]
+>>> add_and_triple = adder_node * 3
+>>> print(sess.run(add_and_triple, {a: 3, b:4.5}))
+22.5
+>>> W = tf.Variable([.3], tf.float32)
+>>> b = tf.Variable([-.3], tf.float32)
+>>> x = tf.placeholder(tf.float32)
+>>> linear_model = W * x + b
+>>> init = tf.global_variables_initializer()
+>>> sess.run(init)
+>>> print(sess.run(linear_model, {x: [1,2,3,4]}))
+[ 0.          0.30000001  0.60000002  0.90000004]
+>>> y = tf.placeholder(tf.float32)
+>>> squared_deltas = tf.square(linear_model - y)
+>>> loss = tf.reduce_sum(squared_deltas)
+>>> print(sess.run(loss, {x: [1,2,3,4], y:[0,-1,-2,-3]}))
+23.66
+>>> fixW = tf.assign(W, [-1.])
+>>> fixb = tf.assign(b, [1.])
+>>> sess.run([fixW, fixb])
+[array([-1.], dtype=float32), array([ 1.], dtype=float32)]
+>>> print(sess.run(loss, {x:[1,2,3,4], y:[0,-1,-2,-3]}))
+0.0
+
+>>> optimizer = tf.train.GradientDescentOptimizer(0.01)
+>>> train = optimizer.minimize(loss)
+>>> sess.run(init)
+
+>>> for i in range(1000):
+...     sess.run(train, {x:[1,2,3,4], y:[0,-1,-2,-3]})
+...
+>>> print(sess.run([W,b]))
+[array([-0.9999969], dtype=float32), array([ 0.99999082], dtype=float32)]
+>>>

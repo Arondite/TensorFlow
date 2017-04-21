@@ -1,0 +1,82 @@
+
+(X:\Anaconda) C:\Users\The Stallion>activate tensorflow
+
+(tensorflow) C:\Users\The Stallion>python
+Python 3.5.2 (v3.5.2:4def2a2901a5, Jun 25 2016, 22:18:55) [MSC v.1900 64 bit (AMD64)] on win32
+Type "help", "copyright", "credits" or "license" for more information.
+
+>>> import numpy as np
+>>> import tensorflow as tf
+>>> # Declare list of features, we only have one real-valued feature
+... def model(features, labels, mode):
+...   # Build a linear model and predict values
+...   W = tf.get_variable("W", [1], dtype=tf.float64)
+...   b = tf.get_variable("b", [1], dtype=tf.float64)
+...   y = W*features['x'] + b
+...   # Loss sub-graph
+...   loss = tf.reduce_sum(tf.square(y - labels))
+...   # Training sub-graph
+...   global_step = tf.train.get_global_step()
+...   optimizer = tf.train.GradientDescentOptimizer(0.01)
+...   train = tf.group(optimizer.minimize(loss),
+...                    tf.assign_add(global_step, 1))
+...   # ModelFnOps connects subgraphs we built to the
+...   # appropriate functionality.
+...   return tf.contrib.learn.ModelFnOps(
+...       mode=mode, predictions=y,
+...       loss=loss,
+...       train_op=train)
+...
+>>> estimator = tf.contrib.learn.Estimator(model_fn=model)
+WARNING:tensorflow:Using temporary folder as model directory: C:\Users\THESTA~1\AppData\Local\Temp\tmpbjuyxd7q
+INFO:tensorflow:Using default config.
+INFO:tensorflow:Using config: {'_cluster_spec': <tensorflow.python.training.server_lib.ClusterSpec object at 0x00000283AFC51E80>, '_tf_random_seed': None, '_task_id': 0, '_save_checkpoints_steps': None, '_keep_checkpoint_every_n_hours': 10000, '_evaluation_master': '', '_tf_config': gpu_options {
+  per_process_gpu_memory_fraction: 1
+}
+, '_num_ps_replicas': 0, '_save_checkpoints_secs': 600, '_task_type': None, '_master': '', '_keep_checkpoint_max': 5, '_is_chief': True, '_environment': 'local', '_save_summary_steps': 100}
+>>> # define our data set
+... x = np.array([1., 2., 3., 4.])
+>>> y = np.array([0., -1., -2., -3.])
+>>> input_fn = tf.contrib.learn.io.numpy_input_fn({"x": x}, y, 4, num_epochs=1000)
+>>> estimator.fit(input_fn=input_fn, steps=1000)
+INFO:tensorflow:Create CheckpointSaverHook.
+INFO:tensorflow:Saving checkpoints for 1 into C:\Users\THESTA~1\AppData\Local\Temp\tmpbjuyxd7q\model.ckpt.
+INFO:tensorflow:loss = 2.90849379149, step = 1
+INFO:tensorflow:global_step/sec: 2341.55
+INFO:tensorflow:loss = 0.0268832484728, step = 101
+INFO:tensorflow:global_step/sec: 2378.63
+INFO:tensorflow:loss = 0.000460036126441, step = 201
+INFO:tensorflow:global_step/sec: 2407.19
+INFO:tensorflow:loss = 0.000270506166223, step = 301
+INFO:tensorflow:global_step/sec: 2457.7
+INFO:tensorflow:loss = 4.6487299777e-05, step = 401
+INFO:tensorflow:global_step/sec: 2378.68
+INFO:tensorflow:loss = 7.26326942801e-07, step = 501
+INFO:tensorflow:global_step/sec: 2374.91
+INFO:tensorflow:loss = 1.63401675141e-07, step = 601
+INFO:tensorflow:global_step/sec: 2436.72
+INFO:tensorflow:loss = 2.29847424473e-09, step = 701
+INFO:tensorflow:global_step/sec: 2561.49
+INFO:tensorflow:loss = 3.5263984208e-10, step = 801
+INFO:tensorflow:global_step/sec: 3115.99
+INFO:tensorflow:loss = 2.12867369779e-10, step = 901
+INFO:tensorflow:Saving checkpoints for 1000 into C:\Users\THESTA~1\AppData\Local\Temp\tmpbjuyxd7q\model.ckpt.
+INFO:tensorflow:Loss for final step: 7.46584289277e-12.
+Estimator(params=None)
+>>> print(estimator.evaluate(input_fn=input_fn, steps=10))
+INFO:tensorflow:Starting evaluation at 2017-04-21-19:26:38
+INFO:tensorflow:Evaluation [1/10]
+INFO:tensorflow:Evaluation [2/10]
+INFO:tensorflow:Evaluation [3/10]
+INFO:tensorflow:Evaluation [4/10]
+INFO:tensorflow:Evaluation [5/10]
+INFO:tensorflow:Evaluation [6/10]
+INFO:tensorflow:Evaluation [7/10]
+INFO:tensorflow:Evaluation [8/10]
+INFO:tensorflow:Evaluation [9/10]
+INFO:tensorflow:Evaluation [10/10]
+INFO:tensorflow:Finished evaluation at 2017-04-21-19:26:38
+INFO:tensorflow:Saving dict for global step 1000: global_step = 1000, loss = 1.3388e-11
+WARNING:tensorflow:Skipping summary for global_step, must be a float or np.float32.
+{'global_step': 1000, 'loss': 1.3387959e-11}
+>>>
